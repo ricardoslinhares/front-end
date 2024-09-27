@@ -9,11 +9,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/black.min.css">
     <style>
-        body, html {
-            height: 100%;
-            margin: 0;
-            overflow: hidden;
-        }
         .reveal .slides section {
             display: flex;
             flex-direction: column;
@@ -47,23 +42,8 @@
             font-size: 0.8em;
             margin: 5px 0;
         }
-        @media (max-width: 768px) {
-            .reveal p {
-                font-size: 0.7em;
-            }
-        }
-        .zoomable {
+        #zoomableImage {
             cursor: zoom-in;
-        }
-        .zoom-icon {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: rgba(255, 255, 255, 0.7);
-            border-radius: 50%;
-            padding: 5px;
-            z-index: 10;
-            cursor: pointer;
         }
         .zoom-instructions {
             position: absolute;
@@ -113,8 +93,7 @@
 
             <section>
                 <div class="image-container">
-                    <img src="https://i.imgur.com/h5JoCKi.png" alt="Jornada da Nova Era da Soja na China" class="zoomable" id="zoomableImage">
-                    <div class="zoom-icon" id="zoomIcon">🔍</div>
+                    <img src="https://i.imgur.com/h5JoCKi.png" alt="Jornada da Nova Era da Soja na China" id="zoomableImage">
                     <div class="zoom-instructions">Clique na imagem para ampliar</div>
                 </div>
             </section>
@@ -143,28 +122,47 @@
             maxScale: 1
         });
 
-        // Inicializa o Medium Zoom apenas na imagem do quarto slide
-        const zoom = mediumZoom('#zoomableImage', {
-            margin: 24,
-            background: 'rgba(0,0,0,0.9)',
-            scrollOffset: 0,
+        const zoomableImage = document.getElementById('zoomableImage');
+        const zoomInstructions = document.querySelector('.zoom-instructions');
+        let isZoomed = false;
+
+        zoomableImage.addEventListener('click', function(e) {
+            if (!isZoomed) {
+                // Zoom in
+                this.style.position = 'fixed';
+                this.style.top = '0';
+                this.style.left = '0';
+                this.style.width = '100%';
+                this.style.height = '100%';
+                this.style.objectFit = 'contain';
+                this.style.zIndex = '9999';
+                this.style.backgroundColor = 'rgba(0,0,0,0.9)';
+                this.style.cursor = 'zoom-out';
+                zoomInstructions.textContent = 'Clique na imagem para voltar';
+                Reveal.configure({ keyboard: false, touch: false });
+                isZoomed = true;
+            } else {
+                // Zoom out
+                this.style.position = '';
+                this.style.top = '';
+                this.style.left = '';
+                this.style.width = '';
+                this.style.height = '';
+                this.style.objectFit = '';
+                this.style.zIndex = '';
+                this.style.backgroundColor = '';
+                this.style.cursor = 'zoom-in';
+                zoomInstructions.textContent = 'Clique na imagem para ampliar';
+                Reveal.configure({ keyboard: true, touch: true });
+                isZoomed = false;
+            }
+            e.stopPropagation();
         });
 
-        // Desativa os controles do Reveal.js quando o zoom está ativo
-        zoom.on('open', () => {
-            Reveal.configure({ keyboard: false, touch: false });
-            document.querySelector('.zoom-instructions').textContent = 'Clique fora da imagem para voltar';
-        });
-
-        // Reativa os controles do Reveal.js quando o zoom é fechado
-        zoom.on('closed', () => {
-            Reveal.configure({ keyboard: true, touch: true });
-            document.querySelector('.zoom-instructions').textContent = 'Clique na imagem para ampliar';
-        });
-
-        // Adiciona funcionalidade ao ícone de zoom
-        document.getElementById('zoomIcon').addEventListener('click', () => {
-            zoom.open();
+        document.addEventListener('click', function(e) {
+            if (isZoomed && e.target !== zoomableImage) {
+                zoomableImage.click();
+            }
         });
     </script>
 </body>
