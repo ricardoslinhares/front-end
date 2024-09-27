@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jornada da Nova Era da Soja na China</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.0.6/medium-zoom.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/black.min.css">
     <style>
@@ -51,6 +52,9 @@
                 font-size: 0.7em;
             }
         }
+        .zoomable {
+            cursor: zoom-in;
+        }
     </style>
 </head>
 <body>
@@ -88,7 +92,7 @@
 
             <section>
                 <div class="image-container">
-                    <img src="https://i.imgur.com/h5JoCKi.png" alt="Jornada da Nova Era da Soja na China">
+                    <img src="https://i.imgur.com/h5JoCKi.png" alt="Jornada da Nova Era da Soja na China" class="zoomable" id="zoomableImage">
                 </div>
                 <div class="text-container">
                     <h1>Jornada da Nova Era da Soja na China</h1>
@@ -118,6 +122,23 @@
             margin: 0,
             minScale: 1,
             maxScale: 1
+        });
+
+        // Inicializa o Medium Zoom na imagem do quarto slide
+        const zoom = mediumZoom('#zoomableImage', {
+            margin: 24,
+            background: 'rgba(0,0,0,0.8)',
+            scrollOffset: 0,
+        });
+
+        // Desativa os controles do Reveal.js quando o zoom está ativo
+        zoom.on('open', () => {
+            Reveal.configure({ keyboard: false, touch: false });
+        });
+
+        // Reativa os controles do Reveal.js quando o zoom é fechado
+        zoom.on('closed', () => {
+            Reveal.configure({ keyboard: true, touch: true });
         });
     </script>
 </body>
