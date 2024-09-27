@@ -42,7 +42,7 @@
             color: #333;
             padding: 10px;
             text-align: center;
-            position: absolute;
+            position: relative; /* Alterado para relative */
             bottom: 0;
             left: 0;
             right: 0;
@@ -73,9 +73,14 @@
             border-radius: 50%;
             padding: 5px;
             z-index: 10;
-        }
-        .image-container:hover .text-container {
             opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .image-container:hover .zoom-icon {
+            opacity: 1;
+        }
+        .zoom-active .text-container {
+            display: none; /* Esconde o texto durante o zoom */
         }
     </style>
 </head>
@@ -155,13 +160,15 @@
         });
 
         // Desativa os controles do Reveal.js quando o zoom está ativo
-        zoom.on('open', () => {
+        zoom.on('open', event => {
             Reveal.configure({ keyboard: false, touch: false });
+            event.target.closest('.image-container').classList.add('zoom-active'); // Adiciona uma classe quando o zoom é ativado
         });
 
         // Reativa os controles do Reveal.js quando o zoom é fechado
-        zoom.on('closed', () => {
+        zoom.on('closed', event => {
             Reveal.configure({ keyboard: true, touch: true });
+            event.target.closest('.image-container').classList.remove('zoom-active'); // Remove a classe quando o zoom é fechado
         });
 
         // Adiciona efeito de hover para mostrar o ícone de zoom
