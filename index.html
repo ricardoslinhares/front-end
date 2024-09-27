@@ -26,27 +26,17 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            position: relative;
         }
         .image-container img {
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
-            transition: transform 0.3s ease;
-        }
-        .image-container:hover img {
-            transform: scale(1.05);
         }
         .text-container {
             background-color: rgba(240, 240, 240, 0.8);
             color: #333;
             padding: 10px;
             text-align: center;
-            position: relative; /* Alterado para relative */
-            bottom: 0;
-            left: 0;
-            right: 0;
-            transition: opacity 0.3s ease;
         }
         .reveal h1, .reveal h2 { 
             text-transform: none; 
@@ -73,14 +63,18 @@
             border-radius: 50%;
             padding: 5px;
             z-index: 10;
-            opacity: 0;
-            transition: opacity 0.3s ease;
+            cursor: pointer;
         }
-        .image-container:hover .zoom-icon {
-            opacity: 1;
-        }
-        .zoom-active .text-container {
-            display: none; /* Esconde o texto durante o zoom */
+        .zoom-instructions {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            z-index: 10;
         }
     </style>
 </head>
@@ -89,52 +83,49 @@
         <div class="slides">
             <section>
                 <div class="image-container">
-                    <img src="https://i.imgur.com/XCwKUS3.png" alt="Hotéis" class="zoomable">
-                    <div class="zoom-icon">🔍</div>
-                    <div class="text-container">
-                        <h2>Hotéis</h2>
-                        <p>Kempinski Hotel Beijing Yansha Center (Pequim) | Conrad Shanghai (Xangai)</p>
-                    </div>
+                    <img src="https://i.imgur.com/XCwKUS3.png" alt="Hotéis">
+                </div>
+                <div class="text-container">
+                    <h2>Hotéis</h2>
+                    <p>Kempinski Hotel Beijing Yansha Center (Pequim) | Conrad Shanghai (Xangai)</p>
                 </div>
             </section>
 
             <section>
                 <div class="image-container">
-                    <img src="https://i.imgur.com/izN6lTk.png" alt="Roteiro Aéreo" class="zoomable">
-                    <div class="zoom-icon">🔍</div>
-                    <div class="text-container">
-                        <h2>Roteiro Aéreo</h2>
-                        <p>Ida: Guarulhos > Frankfurt > Pequim | Retorno: Xangai > Frankfurt > Guarulhos</p>
-                    </div>
+                    <img src="https://i.imgur.com/izN6lTk.png" alt="Roteiro Aéreo">
+                </div>
+                <div class="text-container">
+                    <h2>Roteiro Aéreo</h2>
+                    <p>Ida: Guarulhos > Frankfurt > Pequim | Retorno: Xangai > Frankfurt > Guarulhos</p>
                 </div>
             </section>
 
             <section>
                 <div class="image-container">
-                    <img src="https://i.imgur.com/0bwLcU3.png" alt="Destinos" class="zoomable">
-                    <div class="zoom-icon">🔍</div>
-                    <div class="text-container">
-                        <h2>Destinos</h2>
-                        <p>Pequim - Capital da China | Xangai - Centro financeiro da China</p>
-                    </div>
+                    <img src="https://i.imgur.com/0bwLcU3.png" alt="Destinos">
+                </div>
+                <div class="text-container">
+                    <h2>Destinos</h2>
+                    <p>Pequim - Capital da China | Xangai - Centro financeiro da China</p>
                 </div>
             </section>
 
             <section>
                 <div class="image-container">
-                    <img src="https://i.imgur.com/h5JoCKi.png" alt="Jornada da Nova Era da Soja na China" class="zoomable">
-                    <div class="zoom-icon">🔍</div>
+                    <img src="https://i.imgur.com/h5JoCKi.png" alt="Jornada da Nova Era da Soja na China" class="zoomable" id="zoomableImage">
+                    <div class="zoom-icon" id="zoomIcon">🔍</div>
+                    <div class="zoom-instructions">Clique na imagem para ampliar</div>
                 </div>
             </section>
 
             <section>
                 <div class="image-container">
-                    <img src="https://i.imgur.com/sOT0v6H.png" alt="Fim da Jornada" class="zoomable">
-                    <div class="zoom-icon">🔍</div>
-                    <div class="text-container">
-                        <h2>Fim da Jornada</h2>
-                        <p>Dia 10 - Domingo, 25 de Agosto | Chegada em Guarulhos</p>
-                    </div>
+                    <img src="https://i.imgur.com/sOT0v6H.png" alt="Fim da Jornada">
+                </div>
+                <div class="text-container">
+                    <h2>Fim da Jornada</h2>
+                    <p>Dia 10 - Domingo, 25 de Agosto | Chegada em Guarulhos</p>
                 </div>
             </section>
         </div>
@@ -152,33 +143,28 @@
             maxScale: 1
         });
 
-        // Inicializa o Medium Zoom em todas as imagens
-        const zoom = mediumZoom('.zoomable', {
+        // Inicializa o Medium Zoom apenas na imagem do quarto slide
+        const zoom = mediumZoom('#zoomableImage', {
             margin: 24,
             background: 'rgba(0,0,0,0.9)',
             scrollOffset: 0,
         });
 
         // Desativa os controles do Reveal.js quando o zoom está ativo
-        zoom.on('open', event => {
+        zoom.on('open', () => {
             Reveal.configure({ keyboard: false, touch: false });
-            event.target.closest('.image-container').classList.add('zoom-active'); // Adiciona uma classe quando o zoom é ativado
+            document.querySelector('.zoom-instructions').textContent = 'Clique fora da imagem para voltar';
         });
 
         // Reativa os controles do Reveal.js quando o zoom é fechado
-        zoom.on('closed', event => {
+        zoom.on('closed', () => {
             Reveal.configure({ keyboard: true, touch: true });
-            event.target.closest('.image-container').classList.remove('zoom-active'); // Remove a classe quando o zoom é fechado
+            document.querySelector('.zoom-instructions').textContent = 'Clique na imagem para ampliar';
         });
 
-        // Adiciona efeito de hover para mostrar o ícone de zoom
-        document.querySelectorAll('.image-container').forEach(container => {
-            container.addEventListener('mouseenter', () => {
-                container.querySelector('.zoom-icon').style.opacity = '1';
-            });
-            container.addEventListener('mouseleave', () => {
-                container.querySelector('.zoom-icon').style.opacity = '0';
-            });
+        // Adiciona funcionalidade ao ícone de zoom
+        document.getElementById('zoomIcon').addEventListener('click', () => {
+            zoom.open();
         });
     </script>
 </body>
